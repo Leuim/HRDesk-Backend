@@ -18,6 +18,11 @@ app.use(express.json())
 app.use(morgan('dev'))
 app.use(cors())
 
+const authRouter = require('./controllers/auth');
+const userRouter = require('./controllers/users');
+
+app.use('/auth', authRouter);
+app.use('/user', userRouter);
 
 app.listen(PORT,()=>{
     console.log(`Listening on port: ${PORT}`);
