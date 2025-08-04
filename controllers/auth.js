@@ -7,14 +7,15 @@ const saltRounds = 10
 
 router.post('/sign-up', async (req, res) => {
     try {
-        const userInDatabase = await User.findOne({ name: req.name })
+        const userInDatabase = await User.findOne({ name: req.body.name })
         if (userInDatabase) {
             res.status(409).json({ err: 'Username already taken' })
         }
 
         const user = await User.create({
             name: req.body.name,
-            password: bcrypt.hashSync(req.body.password, saltRounds)
+            password: bcrypt.hashSync(req.body.password, saltRounds),
+            role:req.body.role
         })
 
         const payload = {
