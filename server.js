@@ -3,14 +3,10 @@ dotenv.config()
 const express = require('express')
 const morgan = require('morgan')
 const mongoose = require('mongoose')
-const logger = require('morgan');
-
 const app = express()
 const cors = require('cors')
 
-const hrdeskRouter = require('./controllers/auth.js');
-app.use(cors({ origin: 'http://localhost:5173' }));
-
+const PORT = process.env.PORT
 
 mongoose.connect(process.env.MONGODB_URI)
 
@@ -28,11 +24,6 @@ const userRouter = require('./controllers/users');
 app.use('/auth', authRouter);
 app.use('/user', userRouter);
 
-app.use(express.json());
-app.use(logger('dev'));
-
-app.use('/auth', hrdeskRouter);
-
-app.listen(3000,()=>{
-    console.log(`Listening on port: ${3000}`);
+app.listen(PORT,()=>{
+    console.log(`Listening on port: ${PORT}`);
 })
