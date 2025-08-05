@@ -1,38 +1,38 @@
 const mongoose = require('mongoose')
 const User = require('./user')
-const { ObjectId } = require('mongodb')
 
 const leaveRequestSchema = mongoose.Schema({
-    SubmittedBy:{
-        type:ObjectId,ref:'User'
+    submittedBy: {
+        type: mongoose.Schema.Types.ObjectId, ref: 'User'
     },
-    LeaveType:{
-        type:String,enum:['annual','sick','paternity']
+    leaveType: {
+        type: String, 
+        enum: ['annual', 'sick', 'Others'],
+        required:true
     },
-    FromDate:{
-        type:Date
+    fromDate: {
+        type: Date,
+        required:true
     },
-    ToDate:{type:Date
-
+    toDate: {
+        type: Date,
+        required:true
     },
-    Reson:{
-        type:String
+    reason: {
+        type: String,
+        required:true
     },
-    Status:{
-        type:String,enum:['pending','approved','rejected']
+    status: {
+        type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending'
     },
-    ReviewBy:{
-        type:ObjectId,ref:'User'
+    reviewBy: {
+        type: mongoose.Schema.Types.ObjectId, ref: 'User'
     },
-    RejectionReason:{
-        type:String
+    rejectionReason: {
+        type: String
     },
-    CreateAt:{
-        type:Date
-    }
-
-   
+    timestamps: true
 })
 
-const LeaveRequest= mongoose.model('LeaveRequest',leaveRequestSchema )
+const LeaveRequest = mongoose.model('LeaveRequest', leaveRequestSchema)
 module.exports = LeaveRequest
