@@ -1,22 +1,25 @@
 const mongoose = require('mongoose')
 const User = require('./user')
-const { ObjectId } = require('mongodb')
 
 const leaveBalanceSchema = mongoose.Schema({
-    Annual:{
-        type:Number
+    annual:{
+        type:Number,
+        default:30,
+        min:0
     },
-    Sick:{
-        type:Number
+    sick:{
+        type:Number,
+        default:30,
+        min:0
     },
-    Paternity:{
-        type:Number
+    others:{
+        type:Number,
+        default:100,
+        min:0
     },
-    Employee:{type:ObjectId,ref:'User'
-
+    employee:{
+        type:mongoose.Schema.Types.ObjectId,ref:'User'
     }
-
-   
 })
 
 const LeaveBalance = mongoose.model('LeaveBalance', leaveBalanceSchema)

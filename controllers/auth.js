@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken')
 const User = require('../models/user')
+const LeaveBalance = require('../models/Leave Balance')
 const router = require('express').Router()
 const bcrypt = require('bcrypt')
 
@@ -16,6 +17,10 @@ router.post('/sign-up', async (req, res) => {
             name: req.body.name,
             password: bcrypt.hashSync(req.body.password, saltRounds),
             role:req.body.role
+        })
+        
+        await LeaveBalance.create({
+            employee:user._id
         })
 
         const payload = {
