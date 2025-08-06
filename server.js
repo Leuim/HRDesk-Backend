@@ -20,9 +20,11 @@ app.use(cors())
 
 const authRouter = require('./controllers/auth');
 const userRouter = require('./controllers/users');
+const leaveBalanceRouter = require('./controllers/leaveBalance.js')
 
 app.use('/auth', authRouter);
 app.use('/user', userRouter);
+app.use('/leaveBalance', leaveBalanceRouter)
 
 app.listen(PORT,()=>{
     console.log(`Listening on port: ${PORT}`);
