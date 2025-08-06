@@ -31,7 +31,7 @@ const leaveRequestSchema = mongoose.Schema({
     rejectionReason: {
         type: String
     },
-    timestamps: true
+    timestamps: Number
 })
 
 const LeaveRequest = mongoose.model('LeaveRequest', leaveRequestSchema)
