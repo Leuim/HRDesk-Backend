@@ -3,14 +3,10 @@ dotenv.config()
 const express = require('express')
 const morgan = require('morgan')
 const mongoose = require('mongoose')
-const logger = require('morgan');
-
 const app = express()
 const cors = require('cors')
 
-const hrdeskRouter = require('./controllers/auth.js');
-app.use(cors({ origin: 'http://localhost:5173' }));
-
+const PORT = process.env.PORT
 
 mongoose.connect(process.env.MONGODB_URI)
 
@@ -24,12 +20,13 @@ app.use(cors())
 
 const authRouter = require('./controllers/auth');
 const userRouter = require('./controllers/users');
+const leaveRequestRouter=require('./controllers/LeaveRequest.js')
 const leaveBalanceRouter = require('./controllers/leaveBalance.js')
 
 app.use('/auth', authRouter);
 app.use('/user', userRouter);
-app.use('/leaveBalance', leaveBalanceRouter)
-
-app.listen(3000,()=>{
-    console.log(`Listening on port: ${3000}`);
+app.use('/leaveBalance', leaveBalanceRouter);
+app.use('/leaveRequest', leaveRequestRouter);
+app.listen(PORT,()=>{
+    console.log(`Listening on port: ${PORT}`);
 })
