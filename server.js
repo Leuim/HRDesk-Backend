@@ -30,11 +30,6 @@ app.use('/auth', authRouter);
 app.use('/user', userRouter);
 app.use('/leaveBalance', leaveBalanceRouter)
 
-app.use(express.json());
-app.use(logger('dev'));
-
-app.use('/auth', hrdeskRouter);
-
 app.listen(3000,()=>{
     console.log(`Listening on port: ${3000}`);
 })

@@ -13,8 +13,17 @@ const userSchema = mongoose.Schema({
         type:String,
         required:true,
         enum:['employee','admin']
+    },
+    leavebalance:{
+        type:mongoose.Schema.ObjectId, ref:'LeaveBalance'
     }
 })
+
+userSchema.set('toJSON', {
+    transform: (document, returnedObject) => {
+        delete returnedObject.password;
+    }
+});
 
 const User = mongoose.model('User', userSchema)
 module.exports = User

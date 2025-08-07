@@ -13,15 +13,15 @@ router.post('/sign-up', async (req, res) => {
             res.status(409).json({ err: 'Username already taken' })
         }
 
+        const newLeaveBalance = await LeaveBalance.create({})
         const user = await User.create({
             name: req.body.name,
             password: bcrypt.hashSync(req.body.password, saltRounds),
-            role:req.body.role
+            role:req.body.role,
+            leavebalance:newLeaveBalance._id
         })
         
-        await LeaveBalance.create({
-            employee:user._id
-        })
+        
 
         const payload = {
             _id: user._id,
