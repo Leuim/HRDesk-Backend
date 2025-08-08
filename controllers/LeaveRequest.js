@@ -4,12 +4,12 @@ const verifyToken = require("../middleware/verify-token.js");
 
 
 //Create New Leave Request
-router.post("/", async (req, res) => {
+router.post("/", verifyToken, async (req, res) => {
   try {
     
     const newleaveRequest = await LeaveRequest.create({
       ...req.body,
-      submittedBy: req.userId 
+      submittedBy: req.user._id 
     });
 
     res.status(201).json(newleaveRequest); 
@@ -20,9 +20,9 @@ router.post("/", async (req, res) => {
 })
 
 //List All Leave of User
-router.get('/' , async (req, res) => {
+router.get('/' , verifyToken, async (req, res) => {
     try {
-        const leaves = await LeaveRequest.find({ submittedBy: req.userId }).sort({ createdAt: -1 });
+        const leaves = await LeaveRequest.find({ submittedBy: req.user._id }).populate('submittedBy').sort({ createdAt: -1 });
         res.status(200).json(leaves);
     } catch (error) {
         res.status(500).json({ message: 'Server Error' });
@@ -83,6 +83,70 @@ router.delete("/:LeaveRequestId",  async (req, res) => {
         res.status(500).json({ message: 'Server Error' });
     }
 })
+
+// PUT /api/leaves/:id/approve
+router.put('/:leaveId/approve', verifyToken, async (req, res) => {
+  try {
+    // Check if user is admin
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Access denied. Admins only.' });
+    }
+
+    const leave = await LeaveRequest.findById(req.params.leaveId);
+    if (!leave) {
+      return res.status(404).json({ message: 'Leave request not found.' });
+    }
+
+    if (leave.status !== 'pending') {
+      return res.status(400).json({ message: 'Leave request already processed.' });
+    }
+
+    leave.status = 'approved';
+    leave.reviewBy = req.user._id;
+
+    await leave.save();
+
+    res.status(200).json({ message: 'Leave request approved.', leave });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error.', error: err.message });
+  }
+});
+
+// PUT /api/leaves/:id/reject
+router.put('/:leaveid/reject', verifyToken, async (req, res) => {
+  try {
+    
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Access denied. Admins only.' });
+    }
+
+    const leave = await LeaveRequest.findById(req.params.id);
+    if (!leave) {
+      return res.status(404).json({ message: 'Leave request not found.' });
+    }
+
+    if (leave.status !== 'pending') {
+      return res.status(400).json({ message: 'Leave request already processed.' });
+    }
+
+    const { rejectionReason } = req.body;
+    if (!rejectionReason) {
+      return res.status(400).json({ message: 'Rejection reason is required.' });
+    }
+
+    leave.status = 'rejected';
+    leave.reviewBy = req.user._id;
+    leave.rejectionReason = rejectionReason;
+
+    await leave.save();
+
+    res.status(200).json({ leave });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error.', error: err.message });
+  }
+});
+
+
 
 
 module.exports = router;
