@@ -1,121 +1,144 @@
 const router = require('express').Router()
 const LeaveRequest = require('../models/Leave Request')
 const verifyToken = require("../middleware/verify-token.js");
+const User = require('../models/user.js');
+const LeaveBalance = require('../models/Leave Balance.js');
 
 
 //Create New Leave Request
 router.post("/", verifyToken, async (req, res) => {
   try {
-    
+
     const newleaveRequest = await LeaveRequest.create({
       ...req.body,
-      submittedBy: req.user._id 
+      submittedBy: req.user._id
     });
 
-    res.status(201).json(newleaveRequest); 
+    res.status(201).json(newleaveRequest);
   } catch (err) {
-    console.error("Error creating leave request:", err); 
+    console.error("Error creating leave request:", err);
     res.status(500).json({ err: err.message });
   }
 })
 
 //List All Leave of User
-router.get('/' , verifyToken, async (req, res) => {
-    try {
-        const leaves = await LeaveRequest.find({ submittedBy: req.user._id }).populate('submittedBy').sort({ createdAt: -1 });
-        res.status(200).json(leaves);
-    } catch (error) {
-        res.status(500).json({ message: 'Server Error' });
-    }
+router.get('/', verifyToken, async (req, res) => {
+  try {
+    const leaves = await LeaveRequest.find({ submittedBy: req.user._id }).populate('submittedBy').sort({ createdAt: -1 });
+    res.status(200).json(leaves);
+  } catch (error) {
+    res.status(500).json({ message: 'Server Error' });
+  }
 })
 
 
 //GET One Leave 
-router.get('/:LeaveRequestId',  async (req,res)=>{
+router.get('/:LeaveRequestId', async (req, res) => {
 
   try {
-        const leave = await LeaveRequest.findById(req.params.LeaveRequestId);
+    const leave = await LeaveRequest.findById(req.params.LeaveRequestId);
 
-        if (!leave) {
-            return res.status(404).json({ message: 'Leave Request not found' });
-        }
-
-        res.status(200).json(leave);
-    } catch (error) {
-        res.status(400).json({ message: 'Invalid ID' });
+    if (!leave) {
+      return res.status(404).json({ message: 'Leave Request not found' });
     }
+
+    res.status(200).json(leave);
+  } catch (error) {
+    res.status(400).json({ message: 'Invalid ID' });
+  }
 
 })
 
 //UPDATE Leave
-  router.put('/:LeaveRequestId',  async (req, res) => {
-    try {
-        const leave = await LeaveRequest.findById(req.params.LeaveRequestId);
+router.put('/:LeaveRequestId', async (req, res) => {
+  try {
+    const leave = await LeaveRequest.findById(req.params.LeaveRequestId);
 
-        if (!leave) {
-            return res.status(404).json({ message: 'Leave Request not found' });
-        }
-
-        const updatedLeave = await LeaveRequest.findByIdAndUpdate(
-            req.params.LeaveRequestId,
-            req.body,
-            { new: true, runValidators: true }
-        );
-
-        res.status(200).json(updatedLeave);
-    } catch (error) {
-        res.status(400).json({ message: error.message });
+    if (!leave) {
+      return res.status(404).json({ message: 'Leave Request not found' });
     }
+
+    const updatedLeave = await LeaveRequest.findByIdAndUpdate(
+      req.params.LeaveRequestId,
+      req.body,
+      { new: true, runValidators: true }
+    );
+
+    res.status(200).json(updatedLeave);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
 })
 
 
 //DELETE Leave
-router.delete("/:LeaveRequestId",  async (req, res) => {
-    try {
-        const leave = await LeaveRequest.findById(req.params.LeaveRequestId);
-        if (!leave) {
-            return res.status(404).json({ message: 'Leave Request not found' });
-        }
-        await LeaveRequest.findByIdAndDelete(req.params.LeaveRequestId);
-        res.status(200).json({ message: 'Leave Request deleted successfully' });
-    } catch (error) {
-        console.error("Error deleting leave request:", error);
-        res.status(500).json({ message: 'Server Error' });
+router.delete("/:LeaveRequestId", async (req, res) => {
+  try {
+    const leave = await LeaveRequest.findById(req.params.LeaveRequestId);
+    if (!leave) {
+      return res.status(404).json({ message: 'Leave Request not found' });
     }
+    await LeaveRequest.findByIdAndDelete(req.params.LeaveRequestId);
+    res.status(200).json({ message: 'Leave Request deleted successfully' });
+  } catch (error) {
+    console.error("Error deleting leave request:", error);
+    res.status(500).json({ message: 'Server Error' });
+  }
 })
 
-// PUT /api/leaves/:id/approve
 router.put('/:leaveId/approve', verifyToken, async (req, res) => {
   try {
-    // Check if user is admin
+    console.log('Received body:', req.body);
+
     if (req.user.role !== 'admin') {
       return res.status(403).json({ message: 'Access denied. Admins only.' });
     }
 
-    const leave = await LeaveRequest.findById(req.params.leaveId);
+    const { daysCount, leaveType } = req.body;
+
+    const leave = await LeaveRequest.findOne(
+      { _id: req.params.leaveId, status: 'pending' },
+      
+    );
+
     if (!leave) {
-      return res.status(404).json({ message: 'Leave request not found.' });
+      return res.status(400).json({ message: 'Leave request not found or already processed.' });
     }
 
-    if (leave.status !== 'pending') {
-      return res.status(400).json({ message: 'Leave request already processed.' });
+    const leaveOwner = await User.findById(leave.submittedBy);
+    if (!leaveOwner) {
+      return res.status(400).json({ message: 'Leave request owner not found.' });
     }
 
-    leave.status = 'approved';
-    leave.reviewBy = req.user._id;
+    const leaveBalance = await LeaveBalance.findById(leaveOwner.leavebalance);
+    if (!leaveBalance) {
+      return res.status(400).json({ message: 'Leave balance not found.' });
+    }
 
-    await leave.save();
+    const balance = leaveBalance[leaveType];
+    if (balance < daysCount) {
+      return res.status(400).json({ message: `Not enough ${leaveType} leave balance.` });
+    }
 
-    res.status(200).json({ message: 'Leave request approved.', leave });
+    leaveBalance[leaveType] -= daysCount;
+
+    await leaveBalance.save();
+
+    leave.status = 'approved'
+    leave.reviewBy = req.user._id 
+    await leave.save()
+
+    res.status(200).json({ leave });
   } catch (err) {
-    res.status(500).json({ message: 'Server error.', error: err.message });
+    res.status(500).json({ err: err.message });
   }
 });
 
-// PUT /api/leaves/:id/reject
+
+// PUT reject
 router.put('/:leaveid/reject', verifyToken, async (req, res) => {
   try {
-    
+
     if (req.user.role !== 'admin') {
       return res.status(403).json({ message: 'Access denied. Admins only.' });
     }
@@ -142,11 +165,8 @@ router.put('/:leaveid/reject', verifyToken, async (req, res) => {
 
     res.status(200).json({ leave });
   } catch (err) {
-    res.status(500).json({ message: 'Server error.', error: err.message });
+    res.status(500).json({ err: err.message });
   }
 });
-
-
-
 
 module.exports = router;
