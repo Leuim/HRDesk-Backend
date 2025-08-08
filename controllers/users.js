@@ -45,7 +45,7 @@ router.put('/:userId', verifyToken, async (req, res) => {
       req.params.userId,
       req.body,
       { new: true }
-    )
+    ).populate('leavebalance')
     res.status(200).json(updatedUser)
   } catch (err) {
     res.status(500).json({ err: err.message })

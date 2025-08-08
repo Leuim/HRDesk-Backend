@@ -26,9 +26,8 @@ router.put('/:leaveBalanceId', async (req, res) => {
 
     res.status(200).json(leaveBalance);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ err: err.message });
   }
 });
-
 
 module.exports = router
