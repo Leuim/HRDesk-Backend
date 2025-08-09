@@ -23,10 +23,17 @@ const userRouter = require('./controllers/users');
 const leaveRequestRouter=require('./controllers/LeaveRequest.js')
 const leaveBalanceRouter = require('./controllers/leaveBalance.js')
 
+//Routes In Backend
 app.use('/auth', authRouter);
 app.use('/user', userRouter);
 app.use('/leaveBalance', leaveBalanceRouter);
 app.use('/leaveRequest', leaveRequestRouter);
+app.use('/employee-dashboard',leaveBalanceRouter)
+// app.use('/NewLeaveRequest',leaveRequestRouter)
+
+
+
+
 app.listen(PORT,()=>{
     console.log(`Listening on port: ${PORT}`);
 })
