@@ -20,7 +20,7 @@ const userSchema = mongoose.Schema({
 })
 
 userSchema.set('toJSON', {
-    transform: (document, returnedObject) => {
+    transform: ( returnedObject) => {
         delete returnedObject.password;
     }
 });
