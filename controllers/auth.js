@@ -60,6 +60,7 @@ router.post('/sign-in', async (req, res) => {
     const token = jwt.sign({ payload }, process.env.JWT_SECRET);
 
     res.status(200).json({ token });
+
   } catch (err) {
     res.status(500).json({ err: err.message });
   }

@@ -1,3 +1,4 @@
+//LeaveRequestControllers
 const router = require('express').Router()
 const LeaveRequest = require('../models/Leave Request')
 const verifyToken = require("../middleware/verify-token.js");
@@ -19,7 +20,9 @@ router.post("/", verifyToken, async (req, res) => {
     console.error("Error creating leave request:", err);
     res.status(500).json({ err: err.message });
   }
-})
+});
+
+
 
 //List All Leave of User
 router.get('/', verifyToken, async (req, res) => {
@@ -30,8 +33,6 @@ router.get('/', verifyToken, async (req, res) => {
     res.status(500).json({ message: 'Server Error' });
   }
 })
-
-
 //GET One Leave 
 router.get('/:LeaveRequestId', async (req, res) => {
 
