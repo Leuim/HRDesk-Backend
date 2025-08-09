@@ -143,7 +143,7 @@ router.put('/:leaveid/reject', verifyToken, async (req, res) => {
       return res.status(403).json({ message: 'Access denied. Admins only.' });
     }
 
-    const leave = await LeaveRequest.findById(req.params.id);
+    const leave = await LeaveRequest.findById(req.params.leaveid);
     if (!leave) {
       return res.status(404).json({ message: 'Leave request not found.' });
     }
@@ -166,6 +166,7 @@ router.put('/:leaveid/reject', verifyToken, async (req, res) => {
     res.status(200).json({ leave });
   } catch (err) {
     res.status(500).json({ err: err.message });
+
   }
 });
 
