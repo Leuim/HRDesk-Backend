@@ -20,9 +20,7 @@ const leaveBalanceSchema = mongoose.Schema({
         min:0
     },
    
-    // employee:{
-    //     type:mongoose.Schema.Types.ObjectId,ref:'User'
-    // }
+    
 })
 
 const LeaveBalance = mongoose.model('LeaveBalance', leaveBalanceSchema)

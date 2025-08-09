@@ -10,8 +10,8 @@ router.get('/:userId', async (req,res)=>{
     } catch (err) {
         res.status(500).json({err:err.message})
     }
-  }
-)
+})
+
 // edit leave balance
 router.put('/:leaveBalanceId', async (req, res) => {
   try {
