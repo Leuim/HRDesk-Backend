@@ -4,14 +4,13 @@ const LeaveBalance = require('../models/Leave Balance')
 //show
 router.get('/:userId', async (req,res)=>{
     try {
-        const BalanceOwner = await User.findById(req.params.userId).populate('leavebalance')
-        const {leavebalance} = BalanceOwner
-        res.status(200).json(leavebalance)
+        const leaveBalance = await LeaveBalance.find({ employee:req.params.userId})
+        res.status(200).json(leaveBalance)
     } catch (err) {
         res.status(500).json({err:err.message})
     }
-  }
-)
+})
+
 // edit leave balance
 router.put('/:leaveBalanceId', async (req, res) => {
   try {
