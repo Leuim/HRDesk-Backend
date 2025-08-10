@@ -2,12 +2,17 @@ const mongoose = require('mongoose')
 const User = require('./user')
 
 const leaveRequestSchema = new mongoose.Schema({
+  duration:{
+    type:Number,
+    required:true,
+    min:1
+  },
   submittedBy: {
     type: mongoose.Schema.Types.ObjectId, ref: 'User'
   },
   leaveType: {
     type: String, 
-    enum: ['annual', 'sick', 'others'],
+    enum: ['annual', 'sick', 'others','paternity'],
     required: true
   },
   fromDate: {
