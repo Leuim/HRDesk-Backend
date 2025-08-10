@@ -19,6 +19,7 @@ const leaveBalanceSchema = mongoose.Schema({
         default:20,
         min:0
     },
+    
    
     
 })
