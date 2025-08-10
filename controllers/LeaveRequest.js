@@ -23,11 +23,29 @@ router.post("/", verifyToken, async (req, res) => {
 });
 
 
-
+//List All Leave 
+router.get('/all-leaves', verifyToken, async (req, res) => {
+  try {
+    const leaves = await LeaveRequest.find().populate('submittedBy').sort({ createdAt: -1 });
+    res.status(200).json(leaves);
+  } catch (error) {
+    res.status(500).json({ message: 'Server Error' });
+  }
+})
 //List All Leave of User
 router.get('/', verifyToken, async (req, res) => {
   try {
     const leaves = await LeaveRequest.find({ submittedBy: req.user._id }).populate('submittedBy').sort({ createdAt: -1 });
+    res.status(200).json(leaves);
+  } catch (error) {
+    res.status(500).json({ message: 'Server Error' });
+  }
+})
+
+// get all leaverequest
+router.get('/all-leaves', verifyToken, async (req, res) => {
+  try {
+    const leaves = await LeaveRequest.find().populate('submittedBy').sort({ createdAt: -1 });
     res.status(200).json(leaves);
   } catch (error) {
     res.status(500).json({ message: 'Server Error' });
@@ -170,5 +188,7 @@ router.put('/:leaveid/reject', verifyToken, async (req, res) => {
 
   }
 });
+
+
 
 module.exports = router;
