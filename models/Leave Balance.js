@@ -11,9 +11,7 @@ const leaveBalanceSchema = mongoose.Schema({
         type:Number,
         default:20,
         min:0
-    }, paternity:{ type:Number,
-       default:10,
-        min:0},
+    }, 
     others:{
         type:Number,
         default:20,
