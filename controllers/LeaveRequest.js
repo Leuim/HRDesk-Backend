@@ -22,12 +22,20 @@ router.post("/", verifyToken, async (req, res) => {
   }
 });
 
-
-
 //List All Leave of User
 router.get('/', verifyToken, async (req, res) => {
   try {
     const leaves = await LeaveRequest.find({ submittedBy: req.user._id }).populate('submittedBy').sort({ createdAt: -1 });
+    res.status(200).json(leaves);
+  } catch (error) {
+    res.status(500).json({ message: 'Server Error' });
+  }
+})
+
+// get all leaverequest
+router.get('/all-leaves', verifyToken, async (req, res) => {
+  try {
+    const leaves = await LeaveRequest.find().populate('submittedBy').sort({ createdAt: -1 });
     res.status(200).json(leaves);
   } catch (error) {
     res.status(500).json({ message: 'Server Error' });
@@ -95,7 +103,7 @@ router.put('/:leaveId/approve', verifyToken, async (req, res) => {
       return res.status(403).json({ message: 'Access denied. Admins only.' });
     }
 
-    const { daysCount, leaveType } = req.body;
+    const { leaveType } = req.body;
 
     const leave = await LeaveRequest.findOne(
       { _id: req.params.leaveId, status: 'pending' },
@@ -117,11 +125,11 @@ router.put('/:leaveId/approve', verifyToken, async (req, res) => {
     }
 
     const balance = leaveBalance[leaveType];
-    if (balance < daysCount) {
+    if (balance < leave.duration) {
       return res.status(400).json({ message: `Not enough ${leaveType} leave balance.` });
     }
 
-    leaveBalance[leaveType] -= daysCount;
+    leaveBalance[leaveType] -= leave.duration;
 
     await leaveBalance.save();
 
@@ -129,7 +137,7 @@ router.put('/:leaveId/approve', verifyToken, async (req, res) => {
     leave.reviewBy = req.user._id 
     await leave.save()
 
-    res.status(200).json({ leave });
+    res.status(200).json({ leave, leaveduration:leave.duration });
   } catch (err) {
     res.status(500).json({ err: err.message });
   }
@@ -170,5 +178,7 @@ router.put('/:leaveid/reject', verifyToken, async (req, res) => {
 
   }
 });
+
+
 
 module.exports = router;
