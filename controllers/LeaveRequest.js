@@ -35,7 +35,7 @@ router.get('/', verifyToken, async (req, res) => {
 // get all leaverequest
 router.get('/all-leaves', verifyToken, async (req, res) => {
   try {
-    const leaves = await LeaveRequest.find().populate('submittedBy').sort({ createdAt: -1 });
+    const leaves = await LeaveRequest.find().populate('submittedBy').populate('reviewBy').sort({ createdAt: -1 });
     res.status(200).json(leaves);
   } catch (error) {
     res.status(500).json({ message: 'Server Error' });
