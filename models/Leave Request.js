@@ -12,7 +12,7 @@ const leaveRequestSchema = new mongoose.Schema({
   },
   leaveType: {
     type: String, 
-    enum: ['annual', 'sick', 'others','paternity'],
+    enum: ['annual', 'sick', 'others'],
     required: true
   },
   fromDate: {
@@ -33,7 +33,7 @@ const leaveRequestSchema = new mongoose.Schema({
     default: 'pending'
   },
   reviewBy: {
-    type: mongoose.Schema.Types.ObjectId, ref: 'User'
+    type: String, ref: 'User'
   },
   rejectionReason: String
 }, {
