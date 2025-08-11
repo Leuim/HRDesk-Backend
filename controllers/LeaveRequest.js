@@ -11,7 +11,7 @@ router.post("/", verifyToken, async (req, res) => {
   try {
 
     const newleaveRequest = await LeaveRequest.create({
-      ...req.body,
+      ...req.body ,
       submittedBy: req.user._id
     });
 
@@ -114,7 +114,7 @@ router.put('/:leaveId/approve', verifyToken, async (req, res) => {
       return res.status(400).json({ message: 'Leave request not found or already processed.' });
     }
 
-    const leaveOwner = await User.findById(leave.submittedBy);
+    const leaveOwner = await User.findById(req.user._id);
     if (!leaveOwner) {
       return res.status(400).json({ message: 'Leave request owner not found.' });
     }
@@ -134,7 +134,7 @@ router.put('/:leaveId/approve', verifyToken, async (req, res) => {
     await leaveBalance.save();
 
     leave.status = 'approved'
-    leave.reviewBy = req.user._id 
+    leave.reviewBy =req.user.name; 
     await leave.save()
 
     res.status(200).json({ leave, leaveduration:leave.duration });
@@ -167,7 +167,7 @@ router.put('/:leaveid/reject', verifyToken, async (req, res) => {
     }
 
     leave.status = 'rejected';
-    leave.reviewBy = req.user._id;
+    leave.reviewBy = req.user.name;
     leave.rejectionReason = rejectionReason;
 
     await leave.save();
