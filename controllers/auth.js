@@ -43,7 +43,9 @@ router.post('/sign-in', async (req, res) => {
     if (!user) {
       return res.status(401).json({ err: 'Invalid credentials.' });
     }
-
+    if(!req.body.password || req.body.password.length < 8){
+      return res.status(400).json({ err: 'Password must be eight or more characters' });
+    }
     const isPasswordCorrect = bcrypt.compareSync(
       req.body.password, user.password
     );
