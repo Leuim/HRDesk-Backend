@@ -35,7 +35,7 @@ router.get('/', verifyToken, async (req, res) => {
 // get all leaverequest
 router.get('/all-leaves', verifyToken, async (req, res) => {
   try {
-    const leaves = await LeaveRequest.find().populate('submittedBy').populate('reviewBy').sort({ createdAt: -1 });
+    const leaves = await LeaveRequest.find().populate('submittedBy').sort({ createdAt: -1 });
     res.status(200).json(leaves);
   } catch (error) {
     res.status(500).json({ message: 'Server Error' });
@@ -114,7 +114,7 @@ router.put('/:leaveId/approve', verifyToken, async (req, res) => {
       return res.status(400).json({ message: 'Leave request not found or already processed.' });
     }
 
-    const leaveOwner = await User.findById(req.user._id);
+    const leaveOwner = await User.findById(req.body.submittedBy);
     if (!leaveOwner) {
       return res.status(400).json({ message: 'Leave request owner not found.' });
     }
