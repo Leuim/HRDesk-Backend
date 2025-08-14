@@ -3,6 +3,7 @@ const router = express.Router();
 const User = require('../models/user');
 const LeaveBalance = require('../models/Leave Balance')
 const verifyToken = require('../middleware/verify-token');
+const LeaveRequest = require('../models/Leave Request')
 
 router.get('/', verifyToken, async (req, res) => {
   try {
@@ -55,7 +56,7 @@ router.put('/:userId', verifyToken, async (req, res) => {
 router.delete('/:userId', verifyToken, async (req, res) => {
   try {
     const deletedUser = await User.findByIdAndDelete(req.params.userId)
-
+    await LeaveRequest.delateMany({submittedBy:req.userId})
     if (!deletedUser) {
       return res.status(404).json({ err: 'User not found' })
     }
