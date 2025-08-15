@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken')
 const User = require('../models/user')
-const LeaveBalance = require('../models/Leave Balance')
+const LeaveBalance = require('../models/leaveBalance')
 const router = require('express').Router()
 const bcrypt = require('bcrypt')
 
