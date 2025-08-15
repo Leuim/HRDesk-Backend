@@ -1,9 +1,9 @@
 //LeaveRequestControllers
 const router = require('express').Router()
-const LeaveRequest = require('../models/Leave Request')
+const LeaveRequest = require('../models/leaveRequest.js')
 const verifyToken = require("../middleware/verify-token.js");
 const User = require('../models/user.js');
-const LeaveBalance = require('../models/Leave Balance.js');
+const LeaveBalance = require('../models/leaveBalance.js');
 
 
 //Create New Leave Request

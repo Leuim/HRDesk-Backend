@@ -1,8 +1,11 @@
 const router = require('express').Router()
-const LeaveBalance = require('../models/Leave Balance')
+const LeaveBalance = require('../models/leaveBalance')
 const User = require('../models/user')
+const verifyToken = require('../middleware/verify-token');
+
+
 //show
-router.get('/:userId', async (req,res)=>{
+router.get('/:userId', verifyToken, async (req,res)=>{
     try {
         const BalanceOwner = await User.findById(req.params.userId).populate('leavebalance')
         const {leavebalance} = BalanceOwner
@@ -13,7 +16,7 @@ router.get('/:userId', async (req,res)=>{
 })
 
 // edit leave balance
-router.put('/:leaveBalanceId', async (req, res) => {
+router.put('/:leaveBalanceId', verifyToken,  async (req, res) => {
   try {
     const leaveBalance = await LeaveBalance.findByIdAndUpdate(
       req.params.leaveBalanceId,

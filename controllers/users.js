@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/user');
-const LeaveBalance = require('../models/Leave Balance')
+const LeaveBalance = require('../models/leaveBalance')
 const verifyToken = require('../middleware/verify-token');
-const LeaveRequest = require('../models/Leave Request')
+const LeaveRequest = require('../models/leaveRequest')
 
 router.get('/', verifyToken, async (req, res) => {
   try {
